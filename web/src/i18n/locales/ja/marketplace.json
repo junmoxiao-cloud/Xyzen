@@ -1,0 +1,225 @@
+{
+  "title": "エージェントマーケットプレイス",
+  "tabs": {
+    "all": "すべてのエージェント",
+    "starred": "お気に入り",
+    "my": "マイエージェント"
+  },
+  "search": {
+    "placeholder": "エージェントを検索..."
+  },
+  "sort": {
+    "recent": "最新",
+    "likes": "いいね数",
+    "forks": "フォーク数",
+    "views": "閲覧数",
+    "oldest": "古い順"
+  },
+  "filters": {
+    "filteredBy": "フィルター条件：",
+    "clear": "フィルターをクリア"
+  },
+  "loadError": "リストの読み込みに失敗しました。もう一度お試しください。",
+  "retry": "再試行",
+  "empty": {
+    "starred": {
+      "title": "お気に入りのエージェントはありません",
+      "body": "まだエージェントをお気に入りに追加していません。マーケットプレイスを閲覧してハートアイコンをクリックしてお気に入りを保存しましょう！",
+      "browse": "エージェントを閲覧"
+    },
+    "all": {
+      "title": "まだエージェントがありません",
+      "body": "コミュニティと素晴らしいエージェントを共有する最初の人になりましょう！"
+    },
+    "search": {
+      "body": "検索条件に一致するエージェントがありません。別のキーワードを試すか、フィルターをクリアしてください。"
+    },
+    "publish": {
+      "title": "エージェントを公開する方法：",
+      "steps": {
+        "1": "チャットパネルに移動してエージェントを作成または編集",
+        "2": "エージェントに名前、説明、プロンプトがあることを確認",
+        "3": "「マーケットプレイスに公開」ボタンをクリック",
+        "4": "エージェントをコミュニティと共有！"
+      }
+    }
+  },
+  "card": {
+    "by": "作成者：{{author}}",
+    "byOfficial": "Xyzen",
+    "noDescription": "説明はありません",
+    "tagsMore": "他{{count}}件"
+  },
+  "badge": {
+    "official": "公式"
+  },
+  "detail": {
+    "loading": "エージェント詳細を読み込み中...",
+    "error": "エージェント詳細の読み込みに失敗しました。もう一度お試しください。",
+    "back": "マーケットプレイスに戻る",
+    "publishedBy": "公開者",
+    "noDescription": "説明はありません",
+    "stats": {
+      "likes": "いいね",
+      "forks": "フォーク",
+      "views": "閲覧"
+    },
+    "tabs": {
+      "readme": "README",
+      "config": "設定",
+      "requirements": "要件"
+    },
+    "readme": {
+      "empty": "このエージェントのREADMEはありません。",
+      "manage": "READMEを追加する管理"
+    },
+    "config": {
+      "model": "モデル",
+      "systemPrompt": "システムプロンプト",
+      "mcpServers": "MCPサーバー（{{count}}）",
+      "empty": "設定情報はありません。",
+      "hidden": "このエージェントの設定は非表示です。フォークして使用することはできますが、設定を表示・変更することはできません。",
+      "lockedOwnerNote": "このエージェントはロックされています。フォークしたユーザーは設定を表示・変更できません。"
+    },
+    "requirements": {
+      "provider": {
+        "title": "LLMプロバイダーが必要：",
+        "description": "このエージェントを使用するには、AIプロバイダー（OpenAI、Anthropicなど）を設定する必要があります。"
+      },
+      "mcpServers": "MCPサーバー（{{count}}）",
+      "autoConfigured": "自動設定",
+      "knowledgeBase": {
+        "title": "ナレッジベース：",
+        "description": "元のエージェントは{{count}}個のファイルを使用しています。このエージェントをフォークすると、これらのファイルがあなたのワークスペースにコピーされます。"
+      },
+      "none": "特別な要件はありません！フォーク後すぐに使用できます。",
+      "loading": "要件を読み込み中..."
+    },
+    "actions": {
+      "title": "アクション",
+      "fork": "このエージェントをフォーク",
+      "liked": "いいね済み",
+      "like": "このエージェントにいいね",
+      "manage": "エージェントを管理"
+    },
+    "meta": {
+      "publishedBy": "公開者",
+      "firstPublished": "初回公開：",
+      "lastUpdated": "最終更新："
+    },
+    "aboutForking": {
+      "title": "フォークについて",
+      "description": "フォークすると独立したコピーが作成されます。変更は元のエージェントに影響しません。"
+    }
+  },
+  "publish": {
+    "title": "マーケットプレイスに公開",
+    "titleUpdate": "マーケットプレイスのリストを更新",
+    "description": "エージェントをコミュニティと共有しましょう。いつでも更新または非公開にできます。",
+    "descriptionUpdate": "コミュニティ向けにエージェントの新しいバージョンを作成します。",
+    "validation": {
+      "noConfig": "マーケットプレイスに公開するには、エージェントに設定が必要です。"
+    },
+    "info": {
+      "title": "公開される内容：",
+      "content": "エージェント設定（プロンプト、モデル、設定）、MCPサーバー要件（名前のみ）、ナレッジベース構造（ファイル参照を含む）。",
+      "note": "注意：",
+      "noteContent": "エージェントをフォークしたユーザーは、ナレッジベースファイルのコピーを受け取ります。"
+    },
+    "commitMessage": {
+      "label": "コミットメッセージ",
+      "placeholder": "このバージョンの変更点を説明してください（例：「より良い応答のためにシステムプロンプトを改善」、「ウェブ検索サポートを追加」）",
+      "charCount": "{{count}}/500文字"
+    },
+    "readme": {
+      "label": "README.md",
+      "placeholder": "エージェントの詳細なドキュメントを追加...（Markdownサポート）",
+      "hint": "基本的なMarkdown構文がサポートされています。これはエージェントのマーケットプレイスページに表示されます。"
+    },
+    "publishImmediately": {
+      "label": "すぐに公開",
+      "description": "このリストをマーケットプレイスですぐに表示する"
+    },
+    "preview": {
+      "show": "公開される内容を表示",
+      "hide": "プレビューを隠す",
+      "title": "プレビュー",
+      "name": "名前",
+      "description": "説明",
+      "systemPrompt": "システムプロンプト",
+      "mcpServers": "必要なMCPサーバー（{{count}}）",
+      "mcpWarning": "⚠️ ユーザーは自分のMCP接続を設定する必要があります",
+      "knowledgeBase": "ナレッジベース",
+      "knowledgeFiles": "{{name}}（{{count}}ファイル）",
+      "knowledgeInfo": "ℹ️ ユーザーはワークスペースでこれらのファイルのコピーを受け取ります"
+    },
+    "success": {
+      "published": "エージェントがマーケットプレイスに正常に公開されました！",
+      "updated": "エージェントリストが正常に更新されました！"
+    },
+    "error": {
+      "default": "エージェントの公開に失敗しました。もう一度お試しください。"
+    },
+    "actions": {
+      "cancel": "キャンセル",
+      "publish": "公開",
+      "update": "リストを更新",
+      "saveAsDraft": "下書きとして保存",
+      "publishing": "公開中..."
+    },
+    "forkMode": {
+      "label": "フォークモード",
+      "help": "ユーザーがフォークしたコピーの設定にアクセスできる範囲を制御します"
+    }
+  },
+  "simplePromptEditor": {
+    "label": "システムプロンプト",
+    "description": "エージェントがどのように動作し、ユーザーに応答するかを定義します。",
+    "placeholder": "エージェントへの指示を入力...",
+    "complexAgent": {
+      "title": "複雑なエージェント設定",
+      "description": "このエージェントはカスタムグラフ設定を使用しています。動作を変更するには、完全なワークフローエディタを使用してください。"
+    }
+  },
+  "manage": {
+    "config": {
+      "title": "設定",
+      "description": "エージェントのグラフ設定とワークフローを編集します。",
+      "save": "保存して公開",
+      "saving": "保存中...",
+      "cancel": "キャンセル",
+      "edit": "設定を編集",
+      "commitMessage": "エージェント設定を更新",
+      "success": "設定が更新・公開されました！",
+      "error": "設定の更新に失敗しました。もう一度お試しください。",
+      "visualEditor": "ビジュアルエディタ",
+      "jsonEditor": "JSON エディタ",
+      "jsonDescription": "生のJSON設定を編集します。変更はビジュアルエディタと同期されます。",
+      "invalidJson": "無効なJSON形式",
+      "empty": "設定情報はありません。",
+      "configureNow": "今すぐ設定"
+    },
+    "forkMode": {
+      "title": "フォークモード",
+      "help": "ユーザーがフォークしたコピーの設定にアクセスできる範囲を制御します",
+      "saving": "保存中...",
+      "success": "フォークモードが更新されました！",
+      "error": "フォークモードの更新に失敗しました。もう一度お試しください。"
+    }
+  },
+  "forkMode": {
+    "editable": "編集可能",
+    "locked": "ロック",
+    "editableDescription": "ユーザーは設定を表示・編集できます",
+    "lockedDescription": "設定は非表示で読み取り専用です"
+  },
+  "fork": {
+    "lockedAgent": "ロックされたエージェント",
+    "lockedAgentDescription": "このエージェントはロックモードでフォークされます。使用はできますが、設定は非表示で変更できません。",
+    "editableDescription": "フォークしたエージェントは完全に独立しています。変更は元のエージェントに影響しません。"
+  },
+  "infinite": {
+    "loadingMore": "さらに読み込み中...",
+    "scrollHint": "スクロールしてさらに読み込む"
+  }
+}

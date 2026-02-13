@@ -1,0 +1,229 @@
+[project]
+name = "service"
+version = "1.2.0"
+description = "The backend service of Xyzen"
+readme = "README.md"
+requires-python = ">=3.12, <3.13"
+dependencies = [
+    "aioboto3>=15.5.0",
+    "alembic>=1.16.4",
+    "anthropic>=0.67.0",
+    "celery[redis]>=5.4.0",
+    "databases[postgresql,sqlite]>=0.9.0",
+    "fastapi[standard]>=0.116.1",
+    "fastmcp>=2.12.3",
+    "google-genai>=1.38.0",
+    "greenlet>=3.2.3",
+    "httpx>=0.28.1",
+    "langchain>=1.0.2",
+    "langchain-anthropic>=1.0.0",
+    "langchain-google-genai>=3.0.0",
+    "langchain-google-vertexai>=3.0.3",
+    "langchain-openai>=1.0.1",
+    "langgraph>=1.0.1",
+    "langgraph-checkpoint-postgres>=3.0.0",
+    "llm-sandbox[docker,k8s]>=0.3.20",
+    "loguru>=0.7.3",
+    "mcp>=1.11.0",
+    "openai>=1.98.0",
+    "psycopg[binary,pool]>=3.2.9",
+    "pydantic-graph>=0.4.10",
+    "pydantic-settings>=2.10.1",
+    "pyjwt[crypto]>=2.10.0",
+    "pymupdf>=1.26.7",
+    "python-multipart>=0.0.20",
+    "requests>=2.32.4",
+    "sqlmodel>=0.0.24",
+    "openpyxl>=3.1.2",
+    "python-docx>=1.1.0",
+    "python-pptx>=0.6.23",
+    "websockets>=13.0,<14.0",
+    "reportlab>=4.4.7",
+    "langchain-qwq>=0.3.1",
+    "jinja2>=3.1.6",
+    "beautifulsoup4>=4.14.3",
+    "lxml>=6.0.2",
+    "pyyaml>=6.0.3",
+    "pytesseract>=0.3.13",
+    "pillow>=12.0.0",
+    "celery-types>=0.24.0",
+    "trafilatura>=1.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "types-pyjwt>=1.7.1",
+    "types-requests>=2.32.4.20250611",
+    "types-aioboto3>=15.5.0",
+    "types-openpyxl>=3.1.5.20250919",
+    "pyright>=1.1.390",
+    "pre-commit>=4.2.0",
+    "ruff>=0.14.3",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.12.0",
+    "httpx>=0.28.1",
+    "aiosqlite>=0.20.0",
+    "pytest-xdist>=3.8.0",
+    "polyfactory>=3.2.0",
+    "watchdog>=3.0.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "app",
+    "core",
+    "handler",
+    "repo",
+    "models",
+    "schemas",
+    "utils",
+    "common",
+    "internal",
+    "middleware",
+]
+
+[tool.pyright]
+include = ["."]
+ignore = ["**/migrations", "**/.venv/**"]
+pythonVersion = "3.12"
+pythonPlatform = "All"
+typeCheckingMode = "standard"
+venvPath = "."
+venv = ".venv"
+
+# ---------- 严格模式细节配置 ----------
+# strictListInference = true           # 严格推断列表类型（避免 list[Unknown]）
+# strictDictionaryInference = true     # 严格推断字典类型（避免 dict[Unknown, Unknown]）
+# strictSetInference = true            # 严格推断集合类型
+# strictParameterNoneValue = true      # 严格检查参数默认值 None 的类型匹配
+
+# reportMissingTypeStubs = false
+# reportUnknownMemberType = "warning"
+# reportUnknownArgumentType = "warning"
+# reportUnknownVariableType = "warning"
+
+reportMissingImports = "error"                 # 缺失的导入（模块不存在）
+reportDuplicateImport = "error"                # 重复导入同一模块
+reportOptionalSubscript = "error"              # 对可能为 None 的对象使用下标访问
+reportOptionalMemberAccess = "error"           # 访问可能为 None 的对象的成员
+reportOptionalCall = "error"                   # 调用可能为 None 的对象
+reportOptionalIterable = "error"               # 迭代可能为 None 的对象
+reportOptionalContextManager = "error"         # 将可能为 None 的对象用作上下文管理器
+reportOptionalOperand = "error"                # 对可能为 None 的对象使用运算符
+reportConstantRedefinition = "error"           # 重新定义常量（全大写变量名被视为常量）
+reportIncompatibleMethodOverride = "error"     # 方法重写时签名不兼容
+reportIncompatibleVariableOverride = "error"   # 变量重写时类型不兼容
+reportInconsistentConstructor = "error"        # __init__ 方法的实例变量赋值不一致
+reportOverlappingOverload = "error"            # @overload 装饰的函数签名重叠
+reportInvalidStringEscapeSequence = "error"    # 字符串中无效的转义序列
+reportMissingParameterType = "error"           # 函数参数缺少类型注解
+reportUnknownLambdaType = "error"              # Lambda 表达式类型未知
+
+# ============================================================================
+# 报告配置 - 警告级别 (warning)
+# ============================================================================
+# 这些问题不会导致失败，但应该引起注意并修复
+
+reportUnusedImport = "warning"                      # 未使用的导入
+reportUnusedClass = "warning"                       # 未使用的类定义
+reportUnusedFunction = "warning"                    # 未使用的函数定义
+reportUnusedVariable = "warning"                    # 未使用的变量
+reportPrivateUsage = "warning"                      # 使用私有成员（_开头）
+reportUninitializedInstanceVariable = "warning"     # 实例变量未在 __init__ 中初始化
+reportUnnecessaryIsInstance = "warning"             # 不必要的 isinstance 检查
+reportUnnecessaryCast = "warning"                   # 不必要的类型转换
+reportUnnecessaryComparison = "warning"             # 不必要的比较（如 x is True）
+reportUnnecessaryContains = "warning"               # 不必要的 in 检查
+reportUnnecessaryTypeIgnoreComment = "warning"      # 不必要的 type: ignore 注释（强制审查每个 type: ignore 的必要性）
+reportTypeCommentUsage = "warning"                   # 使用类型注释而非类型注解
+reportUnknownParameterType = "warning"               # TODO: 参数类型未知，未来升级为 error，严格禁止
+reportUnknownArgumentType = "warning"                # Disabled: LangChain/LangGraph stubs have incomplete types
+
+# ============================================================================
+# 报告配置 - 禁用项 (none)
+# ============================================================================
+# 这些检查被禁用，因为它们可能过于严格或不适用于当前项目
+
+reportMissingTypeStubs = "none"              # 缺少第三方库的类型存根文件（.pyi）
+reportUntypedFunctionDecorator = "none"      # 装饰器没有类型注解
+reportUntypedClassDecorator = "none"         # 类装饰器没有类型注解
+reportUntypedBaseClass = "none"              # 基类没有类型注解
+reportUnknownVariableType = "none"           # 变量类型未知
+reportUnknownMemberType = "none"             # 成员类型未知
+reportMissingSuperCall = "none"              # 子类方法中缺少 super() 调用
+reportCallInDefaultInitializer = "none"      # 在默认参数中调用函数
+reportImplicitStringConcatenation = "none"   # 隐式字符串拼接（如 "a" "b"）
+
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=.",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=85",
+    "-v",
+    "--tb=short",
+    "--maxfail=10",
+    "--durations=10",
+    "--color=yes",
+    # "-n", "auto",  # Enable parallel execution with pytest-xdist (uncomment to use)
+    "--dist", "worksteal",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "e2e: marks tests as end-to-end tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests/*",
+    "migrations/*",
+    "**/__pycache__/*",
+    ".venv/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]

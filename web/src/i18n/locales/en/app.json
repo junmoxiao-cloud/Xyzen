@@ -1,0 +1,198 @@
+{
+  "title": "Xyzen",
+  "update": {
+    "updating": "Updating to v{{version}}..."
+  },
+  "pwa": {
+    "installTitle": "Install App",
+    "installDescription": "Click the install icon in your address bar for a better experience."
+  },
+  "chat": {
+    "assistantsTitle": "Assistants",
+    "chooseAgentHint": "Choose an agent to start",
+    "chatLabel": "Chat",
+    "thinking": {
+      "label": "Thinking...",
+      "showThinking": "Show thinking",
+      "hideThinking": "Hide thinking"
+    },
+    "toolCall": {
+      "arguments": "Arguments",
+      "result": "Result",
+      "error": "Error",
+      "executedAt": "Executed at",
+      "expandImage": "Click to expand",
+      "imageAlt": "Generated image",
+      "confirmExecute": "Confirm"
+    },
+    "agent": {
+      "stopped": "Generation stopped",
+      "subagents": "Subagents"
+    },
+    "status": {
+      "idle": "Idle",
+      "running": "Running",
+      "stopping": "Stopping",
+      "failed": "Failed"
+    }
+  },
+  "activityBar": {
+    "chat": "Chat",
+    "knowledge": "Knowledge",
+    "community": "Community",
+    "comingSoon": "Coming Soon"
+  },
+  "toolbar": {
+    "newChat": "New Chat",
+    "newChatCreating": "Creating...",
+    "uploadFile": "Upload File",
+    "resizeHint": "Drag to adjust input height",
+    "history": "History",
+    "search": "Search",
+    "searchBuiltin": "Built-in Search",
+    "searchSearxng": "Universal Search",
+    "knowledge": "Knowledge",
+    "knowledgeConnect": "Connect Knowledge Base",
+    "knowledgeDisconnect": "Disconnect",
+    "mcpTools": "MCP Tools Connected",
+    "mcpConnected": "Connected",
+    "mcpAvailable": "Available",
+    "mcpToolsCount": "tools",
+    "mcpOffline": "offline",
+    "mcpNoServers": "No MCP servers configured",
+    "mcpOpenSettings": "Open Settings",
+    "searchOff": "Off",
+    "searchOffDesc": "Do not use search",
+    "searchBuiltinDesc": "Use model's native search capability",
+    "searchBuiltinNotSupported": "Current model does not support",
+    "searchBuiltinConflict": "Conflicts with MCP tools, cannot be used",
+    "searchSearxngDesc": "Use universal search engine",
+    "knowledgeSelect": "Select Knowledge Base",
+    "knowledgeEmpty": "No knowledge bases",
+    "knowledgeEmptyDesc": "Please create one in Knowledge panel first",
+    "tools": "Tools",
+    "builtinTools": "Builtin Tools",
+    "webSearch": "Web Search",
+    "webSearchDesc": "Search the web for information",
+    "knowledgeDesc": "Access knowledge base files",
+    "noKnowledgeSet": "No knowledge base configured",
+    "selectKnowledge": "Select knowledge base",
+    "knowledgeSelected": "Knowledge base selected",
+    "noKnowledgeSets": "No knowledge bases available",
+    "noKnowledge": "None",
+    "image": "Image",
+    "imageDesc": "Generate and read images",
+    "literatureSearch": "Literature",
+    "literatureSearchDesc": "Search academic papers",
+    "memory": "Memory",
+    "memoryDesc": "Search conversation history"
+  },
+  "input": {
+    "placeholder": "Send a message...",
+    "respondingPlaceholder": "AI is responding...",
+    "send": "Send",
+    "stop": "Stop generating",
+    "stopping": "Stopping...",
+    "escToStop": "Stop",
+    "enterToSend": "Send",
+    "shiftEnterForNewline": "New line"
+  },
+  "message": {
+    "edit": "Edit",
+    "editOnly": "Edit",
+    "editAndRegenerate": "Edit & Regenerate",
+    "editCancel": "Cancel",
+    "editSave": "Save",
+    "editSaveRegenerate": "Save & Regenerate",
+    "delete": "Delete",
+    "copy": "Copy"
+  },
+  "authStatus": {
+    "checking": "Checking authentication...",
+    "authInfoTitle": "Authentication Info",
+    "loggedIn": "Signed in",
+    "accountLabel": "Account",
+    "pointsBalance": "Points Balance",
+    "pointsInfo": "Points Info",
+    "credentialsLabel": "Credentials",
+    "accessTokenLabel": "access_token",
+    "copy": "Copy",
+    "openInApp": "Open in App",
+    "clickToCopy": "Click to copy",
+    "noAccessToken": "No access_token",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "unauthorized": "Unauthorized user",
+    "authError": "Authentication error or not configured"
+  },
+  "modelCapabilities": {
+    "vision": "Vision Support",
+    "audioInput": "Audio Input",
+    "videoInput": "Video Input",
+    "webSearch": "Web Search"
+  },
+  "modelSelector": {
+    "noProvider": "Please add an LLM provider first",
+    "notConfigured": "Not Configured"
+  },
+  "tierSelector": {
+    "title": "Select Model Tier",
+    "free": "0.0x",
+    "rateFormat": "{{rate}}x",
+    "consumption": "Consumption",
+    "multiplier": "Multiplier",
+    "infoModal": {
+      "title": "Select Intelligence Mode",
+      "subtitle": "Flexibly allocate AI computing power based on task difficulty",
+      "speed": "Response Speed",
+      "reasoning": "Reasoning Depth",
+      "availableModels": "Model Reference",
+      "imageGen": "Image Generation",
+      "disclaimer": "* Models listed are for capability reference only and do not guarantee the actual model used."
+    },
+    "speedLabels": {
+      "ultraFast": "Ultra Fast",
+      "fast": "Fast",
+      "moderate": "Moderate",
+      "thinking": "Thinking..."
+    },
+    "reasoningLabels": {
+      "basic": "Basic",
+      "standard": "Standard",
+      "excellent": "Excellent",
+      "max": "MAX"
+    },
+    "features": {
+      "quickTranslation": "Quick Translation",
+      "textSummary": "Text Summary",
+      "simpleQA": "Simple Q&A",
+      "dailyChat": "Daily Chat & Assistant",
+      "emailWriting": "Email Writing",
+      "knowledgeQA": "Knowledge Q&A",
+      "pdfAnalysis": "Deep PDF Analysis",
+      "codeWriting": "Code Writing & Debugging",
+      "taskPlanning": "Complex Task Planning",
+      "deepReasoning": "Deep Logic Reasoning",
+      "academicAnalysis": "Research-Level Analysis",
+      "mathSolving": "Complex Math & Algorithms"
+    },
+    "tiers": {
+      "ultra": {
+        "name": "Xyzen Ultra",
+        "description": "Most powerful models for complex tasks"
+      },
+      "pro": {
+        "name": "Xyzen Pro",
+        "description": "Advanced models for professional use"
+      },
+      "standard": {
+        "name": "Xyzen Standard",
+        "description": "Balanced performance and efficiency"
+      },
+      "lite": {
+        "name": "Xyzen Lite",
+        "description": "Fast and lightweight for simple tasks"
+      }
+    }
+  }
+}

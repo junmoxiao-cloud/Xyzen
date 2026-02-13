@@ -1,0 +1,108 @@
+{
+  "title": "Agents",
+  "add": "Add Agent",
+  "edit": "Edit",
+  "delete": "Delete",
+  "badges": {
+    "marketplace": "Published to Marketplace"
+  },
+  "editAgent": "Edit Agent",
+  "deleteAgent": "Delete Agent",
+  "addButton": "+ Add Agent",
+  "createTitle": "Create Agent",
+  "editTitle": "Edit {{name}}",
+  "deleteTitle": "Delete Agent",
+  "deleteConfirm": "Are you sure you want to permanently delete agent \"{{name}}\"? This action cannot be undone.",
+  "deleteConfirmWithListing": "⚠️ This agent has been published to the marketplace. Deleting it will also remove the published version.\n\nAre you sure you want to permanently delete agent \"{{name}}\"? This action cannot be undone.",
+  "deleteBlockedTitle": "Can't delete agent",
+  "deleteBlockedMessage": "This agent is published to Agent Market. Please unpublish it first, then delete it.",
+  "createDescription": "Create a new AI agent with custom prompts and tools.",
+  "updateDescription": "Update the details for your agent.",
+  "systemDescription": "Select a pre-configured system agent with special execution capabilities.",
+  "noSystemAgents": "No system agents available",
+  "tabs": {
+    "custom": "Custom Agent",
+    "system": "System Agent"
+  },
+  "fields": {
+    "name": {
+      "label": "Agent Name",
+      "placeholder": "e.g., My Research Assistant",
+      "required": "Agent Name *"
+    },
+    "description": {
+      "label": "Description",
+      "placeholder": "A brief description of the agent's purpose"
+    },
+    "prompt": {
+      "label": "System Prompt",
+      "placeholder": "Define the agent's behavior and knowledge scope"
+    },
+    "mcpServers": {
+      "label": "MCP Tool Servers",
+      "connected": "Connected MCP Servers",
+      "empty": "No MCP servers available.",
+      "emptyDescription": "No MCP servers available yet",
+      "createButton": "Create MCP Server"
+    },
+    "selectSystemAgent": "Select System Agent *",
+    "customName": "Custom Name (optional)"
+  },
+  "actions": {
+    "cancel": "Cancel",
+    "create": "Create Agent",
+    "creating": "Creating...",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "publish": "Publish to Marketplace",
+    "publishTooltip": "Configure agent before publishing"
+  },
+  "errors": {
+    "nameRequired": "Agent name cannot be empty",
+    "templateRequired": "Please select a system agent",
+    "createFailed": "Failed to create agent, please check the console for more information.",
+    "updateFailed": "Failed to save, please try again later."
+  },
+  "sessionSettings": {
+    "title": "{{name}} Settings",
+    "tabs": {
+      "profile": "Profile",
+      "size": "Size",
+      "workflow": "Agent Graph",
+      "danger": "Danger"
+    },
+    "avatar": {
+      "title": "Avatar",
+      "description": "Customize the avatar for this agent",
+      "style": "Style",
+      "select": "Select Avatar",
+      "random": "Random",
+      "seedPlaceholder": "Custom seed...",
+      "apply": "Apply",
+      "loading": "Loading..."
+    },
+    "profile": {
+      "title": "Agent Profile",
+      "description": "Edit the agent's basic information and system prompt"
+    },
+    "size": {
+      "title": "Widget Size",
+      "description": "Adjust the widget size in the spatial workspace"
+    },
+    "workflow": {
+      "title": "Agent Workflow",
+      "description": "Configure the agent's execution graph and connected tools",
+      "openSettings": "Open Workflow Settings",
+      "visualEditor": "Visual Editor",
+      "jsonEditor": "JSON Editor",
+      "jsonDescription": "Configure advanced agent behavior using JSON. Leave empty to use defaults."
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "description": "Destructive actions that cannot be undone",
+      "deleteButton": "Delete Agent",
+      "deleteConfirmTitle": "Delete Agent?",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+    }
+  }
+}

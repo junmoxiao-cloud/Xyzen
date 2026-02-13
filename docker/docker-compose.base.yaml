@@ -1,0 +1,117 @@
+name: sciol-xyzen
+services:
+  network-service:
+    image: alpine:3.22
+    ports:
+      - '${WEB_PORT:-32233}:32233'
+      - '${SERVICE_PORT:-48196}:48196'
+      - '${POSTGRES_PORT:-5432}:5432'
+      - '${SEARXNG_PORT:-8888}:8080'
+      # - '${REDIS_PORT:-6379}:6379'
+    command: tail -f /dev/null
+    networks:
+      - xyzen-network
+
+  postgresql:
+    image: postgres:16.8-alpine
+    pull_policy: if_not_present
+    network_mode: 'service:network-service'
+    restart: unless-stopped
+    attach: false
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-postgres}
+      POSTGRES_USER: ${DATABASE_USER:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7.4.2-alpine
+    network_mode: 'service:network-service'
+    restart: unless-stopped
+    attach: false
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  celery:
+    image: registry.sciol.ac.cn/sciol/xyzen-service:latest
+    pull_policy: if_not_present
+    network_mode: 'service:network-service'
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uv run celery -A app.worker worker --loglevel=info
+
+  searxng:
+    image: registry.sciol.ac.cn/sciol/searxng:latest
+    container_name: sciol-xyzen-searxng
+    network_mode: 'service:network-service'
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ../infra/searxng/settings.yml:/etc/searxng/settings.yml:ro
+      - ../infra/searxng/limiter.toml:/etc/searxng/limiter.toml:ro
+    environment:
+      - SEARXNG_BASE_URL=http://localhost:8080/
+      - SEARXNG_SECRET=${SEARXNG_SECRET:-754b4bf6bfd589a450139b40c2420d41c0e92760d0594dbcbc5d90e8a3c5aa24}
+    restart: unless-stopped
+    deploy:
+      replicas: ${SEARXNG_REPLICAS:-1}
+    attach: false
+
+  service:
+    image: registry.sciol.ac.cn/sciol/xyzen-service:latest
+    pull_policy: if_not_present
+    network_mode: 'service:network-service'
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'python',
+          '-c',
+          "import urllib.request; urllib.request.urlopen('http://localhost:48196/xyzen/api/health', timeout=5)",
+        ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    image: registry.sciol.ac.cn/sciol/xyzen-web:latest
+    pull_policy: if_not_present
+    network_mode: 'service:network-service'
+    restart: unless-stopped
+    depends_on:
+      service:
+        condition: service_healthy
+
+volumes:
+  db-data:
+    driver: local
+  redis-data:
+    driver: local
+
+networks:
+  xyzen-network:
+    driver: bridge

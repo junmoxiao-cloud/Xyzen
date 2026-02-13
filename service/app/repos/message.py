@@ -1,0 +1,651 @@
+import logging
+from datetime import datetime
+from typing import Any
+from uuid import UUID
+
+from sqlalchemy import delete as sa_delete
+from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlmodel import col, select
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from app.infra.database import AsyncSessionLocal
+from app.models.file import FileRead, FileReadWithUrl
+from app.models.message import Message as MessageModel
+from app.models.message import (
+    MessageCreate,
+    MessageReadWithCitations,
+    MessageReadWithFiles,
+    MessageReadWithFilesAndCitations,
+    MessageUpdate,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class MessageRepository:
+    def __init__(self, db: AsyncSession) -> None:
+        self.db = db
+
+    async def get_message_by_id(self, message_id: UUID) -> MessageModel | None:
+        """
+        Fetches a message by its ID.
+
+        Args:
+            message_id: The UUID of the message to fetch.
+
+        Returns:
+            The MessageModel, or None if not found.
+        """
+        logger.debug(f"Fetching message with id: {message_id}")
+        return await self.db.get(MessageModel, message_id)
+
+    async def get_messages_by_topic(
+        self, topic_id: UUID, order_by_created: bool = True, limit: int | None = None
+    ) -> list[MessageModel]:
+        """
+        Fetches all messages for a given topic.
+
+        Args:
+            topic_id: The UUID of the topic.
+            order_by_created: If True, orders by created_at ascending.
+            limit: Optional limit on the number of messages returned.
+
+        Returns:
+            List of MessageModel instances.
+        """
+        logger.debug(f"Fetching messages for topic_id: {topic_id}")
+        statement = select(MessageModel).where(MessageModel.topic_id == topic_id)
+        if order_by_created:
+            statement = statement.order_by(col(MessageModel.created_at))
+        if limit is not None:
+            statement = statement.limit(limit)
+        result = await self.db.exec(statement)
+        return list(result.all())
+
+    async def create_message(self, message_data: MessageCreate) -> MessageModel:
+        """
+        Creates a new message within the given session.
+        This function does NOT commit the transaction, but it does flush the session
+        to ensure the message object is populated with DB-defaults before being returned.
+
+        Args:
+            message_data: The Pydantic model containing the data for the new message.
+
+        Returns:
+            The newly created MessageModel instance.
+        """
+        logger.debug(f"Creating new message for topic_id: {message_data.topic_id}")
+        message = MessageModel.model_validate(message_data)
+        self.db.add(message)
+        await self.db.flush()
+        await self.db.refresh(message)
+        return message
+
+    async def delete_message(self, message_id: UUID, cascade_files: bool = True) -> bool:
+        """
+        Deletes a message by its ID with optional cascade deletion of associated files and citations.
+        This function does NOT commit the transaction.
+
+        Args:
+            message_id: The UUID of the message to delete.
+            cascade_files: If True, also deletes associated files from storage and database (default: True)
+
+        Returns:
+            True if the message was deleted, False if not found.
+        """
+        logger.debug(f"Deleting message with id: {message_id}, cascade_files: {cascade_files}")
+        message = await self.db.get(MessageModel, message_id)
+        if not message:
+            return False
+
+        # Delete associated citations (always cascade)
+        from app.repos.agent_run import AgentRunRepository
+        from app.repos.citation import CitationRepository
+
+        citation_repo = CitationRepository(self.db)
+        deleted_citations = await citation_repo.delete_citations_by_message(message_id)
+        if deleted_citations > 0:
+            logger.info(f"Deleted {deleted_citations} citations for message {message_id}")
+
+        # Delete associated agent run (always cascade)
+        agent_run_repo = AgentRunRepository(self.db)
+        deleted_agent_run = await agent_run_repo.delete_by_message_id(message_id)
+        if deleted_agent_run:
+            logger.info(f"Deleted agent run for message {message_id}")
+
+        # Delete associated files if cascade is enabled
+        if cascade_files:
+            from app.core.storage import get_storage_service
+            from app.repos.file import FileRepository
+
+            file_repo = FileRepository(self.db)
+            files = await file_repo.get_files_by_message(message_id)
+
+            if files:
+                storage = get_storage_service()
+                storage_keys = [file.storage_key for file in files]
+
+                # Delete from object storage
+                try:
+                    await storage.delete_files(storage_keys)
+                    logger.info(f"Deleted {len(storage_keys)} files from storage for message {message_id}")
+                except Exception as e:
+                    logger.error(f"Failed to delete files from storage for message {message_id}: {e}")
+                    # Continue with database deletion even if storage deletion fails
+
+                # Delete file records from database
+                for file in files:
+                    await file_repo.hard_delete_file(file.id)
+
+                logger.info(f"Deleted {len(files)} file records for message {message_id}")
+
+        await self.db.delete(message)
+        await self.db.flush()
+        return True
+
+    async def update_message(self, message_id: UUID, message_update: MessageUpdate) -> MessageModel | None:
+        """
+        Updates a message's content.
+        This function does NOT commit the transaction.
+
+        Args:
+            message_id: The UUID of the message to update.
+            message_update: The Pydantic model containing the fields to update.
+
+        Returns:
+            The updated MessageModel, or None if not found.
+        """
+        logger.debug(f"Updating message with id: {message_id}")
+        message = await self.db.get(MessageModel, message_id)
+        if not message:
+            return None
+
+        # Apply updates from the update model
+        update_data = message_update.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(message, field, value)
+
+        self.db.add(message)
+        await self.db.flush()
+        await self.db.refresh(message)
+        return message
+
+    async def delete_messages_after(
+        self, topic_id: UUID, after_created_at: datetime, cascade_files: bool = True
+    ) -> int:
+        """
+        Deletes all messages in a topic created after a specific timestamp.
+        Used for truncating conversation after an edited message.
+        Uses bulk operations for efficiency instead of per-message deletes.
+        This function does NOT commit the transaction.
+
+        Args:
+            topic_id: The UUID of the topic.
+            after_created_at: Delete messages created strictly after this timestamp.
+            cascade_files: If True, also deletes associated files from storage and database (default: True)
+
+        Returns:
+            Number of messages deleted.
+        """
+        from app.models.agent_run import AgentRun
+        from app.models.citation import Citation
+        from app.models.file import File
+
+        logger.debug(
+            f"Deleting messages after {after_created_at} for topic_id: {topic_id}, cascade_files: {cascade_files}"
+        )
+
+        # 1. Get all message IDs to delete in a single query
+        statement = (
+            select(MessageModel.id)
+            .where(MessageModel.topic_id == topic_id)
+            .where(col(MessageModel.created_at) > after_created_at)
+        )
+        result = await self.db.exec(statement)
+        message_ids = list(result.all())
+
+        if not message_ids:
+            return 0
+
+        # 2. Bulk delete citations for all affected messages
+        citation_delete = sa_delete(Citation).where(col(Citation.message_id).in_(message_ids))
+        await self.db.exec(citation_delete)
+
+        # 3. Bulk delete agent runs for all affected messages
+        agent_run_delete = sa_delete(AgentRun).where(col(AgentRun.message_id).in_(message_ids))
+        await self.db.exec(agent_run_delete)
+
+        # 4. Handle file deletion if cascade is enabled
+        if cascade_files:
+            from app.core.storage import get_storage_service
+
+            # Get all files for affected messages
+            file_statement = select(File).where(col(File.message_id).in_(message_ids))
+            file_result = await self.db.exec(file_statement)
+            files = list(file_result.all())
+
+            if files:
+                # Delete from object storage
+                storage = get_storage_service()
+                storage_keys = [file.storage_key for file in files]
+                try:
+                    await storage.delete_files(storage_keys)
+                    logger.info(f"Deleted {len(storage_keys)} files from storage")
+                except Exception as e:
+                    logger.error(f"Failed to delete files from storage: {e}")
+                    # Continue with database deletion even if storage deletion fails
+
+                # Bulk delete file records
+                file_delete = sa_delete(File).where(col(File.message_id).in_(message_ids))
+                await self.db.exec(file_delete)
+
+        # 5. Bulk delete all messages
+        message_delete = sa_delete(MessageModel).where(col(MessageModel.id).in_(message_ids))
+        await self.db.exec(message_delete)
+
+        count = len(message_ids)
+        logger.info(f"Deleted {count} messages after {after_created_at} for topic {topic_id}")
+        return count
+
+    async def delete_messages_by_topic(self, topic_id: UUID, cascade_files: bool = True) -> int:
+        """
+        Deletes all messages for a given topic with optional cascade deletion of files.
+        This function does NOT commit the transaction.
+
+        Args:
+            topic_id: The UUID of the topic.
+            cascade_files: If True, also deletes associated files from storage and database (default: True)
+
+        Returns:
+            Number of messages deleted.
+        """
+        logger.debug(f"Deleting all messages for topic_id: {topic_id}, cascade_files: {cascade_files}")
+        statement = select(MessageModel).where(MessageModel.topic_id == topic_id)
+        result = await self.db.exec(statement)
+        messages = list(result.all())
+
+        count = 0
+        for message in messages:
+            # Use delete_message with cascade to handle files
+            if await self.delete_message(message.id, cascade_files=cascade_files):
+                count += 1
+
+        return count
+
+    async def bulk_delete_messages(self, message_ids: list[UUID], cascade_files: bool = True) -> int:
+        """
+        Deletes multiple messages by their IDs with optional cascade deletion of files.
+        This function does NOT commit the transaction.
+
+        Args:
+            message_ids: List of message UUIDs to delete.
+            cascade_files: If True, also deletes associated files from storage and database (default: True)
+
+        Returns:
+            Number of messages deleted.
+        """
+        logger.debug(f"Bulk deleting {len(message_ids)} messages, cascade_files: {cascade_files}")
+        count = 0
+        for message_id in message_ids:
+            if await self.delete_message(message_id, cascade_files=cascade_files):
+                count += 1
+        return count
+
+    async def create_message_in_isolated_transaction(
+        self,
+        message_data: MessageCreate,
+        session_factory: async_sessionmaker[Any] | None = None,
+    ) -> None:
+        """
+        Creates and commits a tool event message in a separate, short-lived session.
+
+        This is used to persist tool call/response events immediately without
+        interfering with the main chat session's transaction state.
+
+        Args:
+            message_data: The Pydantic model containing the data for the new message.
+            session_factory: Optional session factory to use. If not provided, uses the
+                global AsyncSessionLocal. Callers in Celery tasks should pass their
+                task-scoped session factory to avoid event loop issues.
+        """
+        logger.debug(f"Creating isolated tool event message for topic_id: {message_data.topic_id}")
+        # Use provided session factory or fall back to global AsyncSessionLocal
+        # Celery tasks must provide their own session factory bound to their event loop
+        factory = session_factory or AsyncSessionLocal
+        async with factory() as db:
+            isolated_repo = MessageRepository(db)
+            await isolated_repo.create_message(message_data=message_data)
+            await db.commit()
+
+    async def get_messages_with_files(
+        self, topic_id: UUID, order_by_created: bool = True, limit: int | None = None
+    ) -> list[MessageReadWithFiles]:
+        """
+        Fetches messages for a topic with their file attachments.
+
+        Args:
+            topic_id: The UUID of the topic.
+            order_by_created: If True, orders by created_at ascending.
+            limit: Optional limit on the number of messages returned.
+
+        Returns:
+            List of MessageReadWithFiles instances with attachments populated.
+        """
+        from app.repos.file import FileRepository
+
+        logger.debug(f"Fetching messages with files for topic_id: {topic_id}")
+
+        # Get messages
+        messages = await self.get_messages_by_topic(topic_id, order_by_created, limit)
+
+        # Get files for each message
+        file_repo = FileRepository(self.db)
+        messages_with_files = []
+
+        for message in messages:
+            files = await file_repo.get_files_by_message(message.id)
+
+            # Add download URLs to file records using backend API endpoint
+            file_reads_with_urls: list[FileReadWithUrl | FileRead] = []
+            for file in files:
+                try:
+                    # Use backend download endpoint instead of presigned URL
+                    # This works from browser (presigned URLs with host.docker.internal don't)
+                    download_url = f"/xyzen/api/v1/files/{file.id}/download"
+
+                    file_with_url = FileReadWithUrl(
+                        **file.model_dump(),
+                        download_url=download_url,
+                    )
+                    file_reads_with_urls.append(file_with_url)
+                except Exception as e:
+                    logger.warning(f"Failed to generate download URL for file {file.id}: {e}")
+                    # Fall back to FileRead without URL
+                    file_reads_with_urls.append(FileRead.model_validate(file))
+
+            message_with_files = MessageReadWithFiles(
+                id=message.id,
+                role=message.role,
+                content=message.content,
+                topic_id=message.topic_id,
+                created_at=message.created_at,
+                attachments=file_reads_with_urls,
+            )
+            messages_with_files.append(message_with_files)
+
+        return messages_with_files
+
+    async def get_message_with_files(self, message_id: UUID) -> MessageReadWithFiles | None:
+        """
+        Fetches a single message with its file attachments.
+
+        Args:
+            message_id: The UUID of the message.
+
+        Returns:
+            MessageReadWithFiles instance with attachments populated, or None if not found.
+        """
+        from app.repos.file import FileRepository
+
+        logger.debug(f"Fetching message with files for message_id: {message_id}")
+
+        # Get the message
+        message = await self.get_message_by_id(message_id)
+        if not message:
+            return None
+
+        # Get files for the message
+        file_repo = FileRepository(self.db)
+        files = await file_repo.get_files_by_message(message.id)
+
+        # Add download URLs to file records using backend API endpoint
+        file_reads_with_urls: list[FileReadWithUrl | FileRead] = []
+        for file in files:
+            try:
+                # Use backend download endpoint instead of presigned URL
+                # This works from browser (presigned URLs with host.docker.internal don't)
+                download_url = f"/xyzen/api/v1/files/{file.id}/download"
+
+                file_with_url = FileReadWithUrl(
+                    **file.model_dump(),
+                    download_url=download_url,
+                )
+                file_reads_with_urls.append(file_with_url)
+            except Exception as e:
+                logger.warning(f"Failed to generate download URL for file {file.id}: {e}")
+                # Fall back to FileRead without URL
+                file_reads_with_urls.append(FileRead.model_validate(file))
+
+        message_with_files = MessageReadWithFiles(
+            id=message.id,
+            role=message.role,
+            content=message.content,
+            topic_id=message.topic_id,
+            created_at=message.created_at,
+            attachments=file_reads_with_urls,
+        )
+
+        return message_with_files
+
+    async def get_messages_with_citations(
+        self, topic_id: UUID, order_by_created: bool = True, limit: int | None = None
+    ) -> list[MessageReadWithCitations]:
+        """
+        Fetches messages for a topic with their citations.
+
+        Args:
+            topic_id: The UUID of the topic.
+            order_by_created: If True, orders by created_at ascending.
+            limit: Optional limit on the number of messages returned.
+
+        Returns:
+            List of MessageReadWithCitations instances with citations populated.
+        """
+        from app.repos.citation import CitationRepository
+
+        logger.debug(f"Fetching messages with citations for topic_id: {topic_id}")
+
+        # Get messages
+        messages = await self.get_messages_by_topic(topic_id, order_by_created, limit)
+
+        # Get citations for each message
+        citation_repo = CitationRepository(self.db)
+        messages_with_citations = []
+
+        for message in messages:
+            citations = await citation_repo.get_citations_as_read(message.id)
+
+            message_with_citations = MessageReadWithCitations(
+                id=message.id,
+                role=message.role,
+                content=message.content,
+                topic_id=message.topic_id,
+                created_at=message.created_at,
+                citations=citations,
+            )
+            messages_with_citations.append(message_with_citations)
+
+        return messages_with_citations
+
+    async def get_messages_with_files_and_citations(
+        self, topic_id: UUID, order_by_created: bool = True, limit: int | None = None
+    ) -> list[MessageReadWithFilesAndCitations]:
+        """
+        Fetches messages for a topic with both file attachments and citations.
+
+        Args:
+            topic_id: The UUID of the topic.
+            order_by_created: If True, orders by created_at ascending.
+            limit: Optional limit on the number of messages returned.
+
+        Returns:
+            List of MessageReadWithFilesAndCitations instances with attachments and citations populated.
+        """
+        from app.repos.agent_run import AgentRunRepository
+        from app.repos.citation import CitationRepository
+        from app.repos.file import FileRepository
+
+        logger.debug(f"Fetching messages with files and citations for topic_id: {topic_id}")
+
+        # Get messages
+        messages = await self.get_messages_by_topic(topic_id, order_by_created, limit)
+
+        # Get files and citations for each message
+        file_repo = FileRepository(self.db)
+        citation_repo = CitationRepository(self.db)
+        agent_run_repo = AgentRunRepository(self.db)
+        messages_with_files_and_citations = []
+
+        for message in messages:
+            # Get files
+            files = await file_repo.get_files_by_message(message.id)
+            file_reads_with_urls: list[FileReadWithUrl | FileRead] = []
+            for file in files:
+                try:
+                    download_url = f"/xyzen/api/v1/files/{file.id}/download"
+                    file_with_url = FileReadWithUrl(
+                        **file.model_dump(),
+                        download_url=download_url,
+                    )
+                    file_reads_with_urls.append(file_with_url)
+                except Exception as e:
+                    logger.warning(f"Failed to generate download URL for file {file.id}: {e}")
+                    file_reads_with_urls.append(FileRead.model_validate(file))
+
+            # Get citations
+            citations = await citation_repo.get_citations_as_read(message.id)
+
+            # Get agent metadata from AgentRun table
+            agent_metadata = None
+            if message.role == "assistant":
+                agent_run = await agent_run_repo.get_by_message_id(message.id)
+                if agent_run:
+                    # Build agent_metadata from AgentRun record
+                    agent_metadata = {
+                        "execution_id": agent_run.execution_id,
+                        "agent_id": agent_run.agent_id,
+                        "agent_name": agent_run.agent_name,
+                        "agent_type": agent_run.agent_type,
+                        "status": agent_run.status,
+                        "started_at": agent_run.started_at,
+                        "ended_at": agent_run.ended_at,
+                        "duration_ms": agent_run.duration_ms,
+                        **(agent_run.node_data or {}),
+                    }
+
+            message_with_files_and_citations = MessageReadWithFilesAndCitations(
+                id=message.id,
+                role=message.role,
+                content=message.content,
+                topic_id=message.topic_id,
+                created_at=message.created_at,
+                attachments=file_reads_with_urls,
+                citations=citations,
+                thinking_content=message.thinking_content,
+                agent_metadata=agent_metadata,
+            )
+            messages_with_files_and_citations.append(message_with_files_and_citations)
+
+        return messages_with_files_and_citations
+
+    async def get_message_with_citations(self, message_id: UUID) -> MessageReadWithCitations | None:
+        """
+        Fetches a single message with its citations.
+
+        Args:
+            message_id: The UUID of the message.
+
+        Returns:
+            MessageReadWithCitations instance with citations populated, or None if not found.
+        """
+        from app.repos.citation import CitationRepository
+
+        logger.debug(f"Fetching message with citations for message_id: {message_id}")
+
+        # Get the message
+        message = await self.get_message_by_id(message_id)
+        if not message:
+            return None
+
+        # Get citations for the message
+        citation_repo = CitationRepository(self.db)
+        citations = await citation_repo.get_citations_as_read(message.id)
+
+        message_with_citations = MessageReadWithCitations(
+            id=message.id,
+            role=message.role,
+            content=message.content,
+            topic_id=message.topic_id,
+            created_at=message.created_at,
+            citations=citations,
+        )
+
+        return message_with_citations
+
+    async def search_messages_by_agent(
+        self,
+        user_id: str,
+        agent_id: UUID,
+        query: str,
+        limit: int = 10,
+        exclude_topic_id: UUID | None = None,
+    ) -> list[dict]:
+        """
+        Search messages across all sessions for a specific agent.
+
+        Searches message content using case-insensitive ILIKE matching.
+        Results are scoped to sessions where:
+        - The session belongs to the specified user
+        - The session has the specified agent assigned
+
+        Args:
+            user_id: User ID for access control
+            agent_id: Agent ID to scope the search
+            query: Search query string (will be wrapped with % for ILIKE)
+            limit: Maximum number of results to return
+            exclude_topic_id: Optional topic ID to exclude (e.g., current conversation)
+
+        Returns:
+            List of dicts with message content, role, topic_name, and created_at
+        """
+        from app.models.sessions import Session as SessionModel
+        from app.models.topic import Topic as TopicModel
+
+        logger.debug(f"Searching messages for agent {agent_id}, user {user_id}, query: {query}")
+
+        # Build the query with joins: Message -> Topic -> Session
+        statement = (
+            select(
+                MessageModel.content,
+                MessageModel.role,
+                MessageModel.created_at,
+                TopicModel.name.label("topic_name"),  # type: ignore[union-attr]
+            )
+            .join(TopicModel, MessageModel.topic_id == TopicModel.id)  # type: ignore[arg-type]
+            .join(SessionModel, TopicModel.session_id == SessionModel.id)  # type: ignore[arg-type]
+            .where(
+                SessionModel.user_id == user_id,
+                SessionModel.agent_id == agent_id,
+                MessageModel.content.ilike(f"%{query}%"),  # type: ignore[union-attr]
+            )
+        )
+
+        # Exclude current topic if specified
+        if exclude_topic_id:
+            statement = statement.where(MessageModel.topic_id != exclude_topic_id)
+
+        # Order by most recent first, apply limit
+        statement = statement.order_by(col(MessageModel.created_at).desc()).limit(limit)
+
+        result = await self.db.exec(statement)  # type: ignore[arg-type]
+        rows = result.all()
+
+        return [
+            {
+                "content": row.content,  # type: ignore[attr-defined]
+                "role": row.role,  # type: ignore[attr-defined]
+                "topic_name": row.topic_name,  # type: ignore[attr-defined]
+                "created_at": row.created_at,  # type: ignore[attr-defined]
+            }
+            for row in rows
+        ]

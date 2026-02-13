@@ -1,0 +1,198 @@
+{
+  "title": "Xyzen",
+  "update": {
+    "updating": "正在更新到 v{{version}}..."
+  },
+  "pwa": {
+    "installTitle": "安装应用",
+    "installDescription": "点击地址栏的安装图标，获得更好的使用体验。"
+  },
+  "chat": {
+    "assistantsTitle": "助手",
+    "chooseAgentHint": "选择一个助手开始",
+    "chatLabel": "聊天",
+    "thinking": {
+      "label": "思考中...",
+      "showThinking": "显示思考过程",
+      "hideThinking": "隐藏思考过程"
+    },
+    "toolCall": {
+      "arguments": "调用参数",
+      "result": "执行结果",
+      "error": "错误信息",
+      "executedAt": "执行时间",
+      "expandImage": "点击放大",
+      "imageAlt": "生成的图片",
+      "confirmExecute": "确认执行"
+    },
+    "agent": {
+      "stopped": "生成已停止",
+      "subagents": "子代理"
+    },
+    "status": {
+      "idle": "空闲",
+      "running": "运行中",
+      "stopping": "停止中",
+      "failed": "失败"
+    }
+  },
+  "activityBar": {
+    "chat": "聊天",
+    "knowledge": "知识库",
+    "community": "社区",
+    "comingSoon": "敬请期待"
+  },
+  "toolbar": {
+    "newChat": "新对话",
+    "newChatCreating": "创建中...",
+    "uploadFile": "上传文件",
+    "resizeHint": "拖动调整输入框高度",
+    "history": "历史记录",
+    "search": "搜索",
+    "searchBuiltin": "内置搜索",
+    "searchSearxng": "通用搜索",
+    "knowledge": "知识库",
+    "knowledgeConnect": "连接知识库",
+    "knowledgeDisconnect": "断开连接",
+    "mcpTools": "MCP 工具已连接",
+    "mcpConnected": "已连接",
+    "mcpAvailable": "可用",
+    "mcpToolsCount": "个工具",
+    "mcpOffline": "离线",
+    "mcpNoServers": "未配置 MCP 服务器",
+    "mcpOpenSettings": "打开设置",
+    "searchOff": "关闭",
+    "searchOffDesc": "不使用搜索功能",
+    "searchBuiltinDesc": "使用模型原生搜索能力",
+    "searchBuiltinNotSupported": "当前模型不支持",
+    "searchBuiltinConflict": "与 MCP 工具冲突，不可使用",
+    "searchSearxngDesc": "使用通用搜索引擎进行搜索",
+    "knowledgeSelect": "选择知识库",
+    "knowledgeEmpty": "暂无知识库",
+    "knowledgeEmptyDesc": "请先在知识库面板创建",
+    "tools": "工具",
+    "builtinTools": "内置工具",
+    "webSearch": "网络搜索",
+    "webSearchDesc": "搜索网络获取信息",
+    "knowledgeDesc": "访问知识库文件",
+    "noKnowledgeSet": "未配置知识库",
+    "selectKnowledge": "选择知识库",
+    "knowledgeSelected": "已选择知识库",
+    "noKnowledgeSets": "暂无可用知识库",
+    "noKnowledge": "无",
+    "image": "图片",
+    "imageDesc": "生成和读取图片",
+    "literatureSearch": "文献搜索",
+    "literatureSearchDesc": "搜索学术文献和论文",
+    "memory": "记忆",
+    "memoryDesc": "搜索对话历史"
+  },
+  "input": {
+    "placeholder": "输入消息...",
+    "respondingPlaceholder": "AI 正在回复...",
+    "send": "发送",
+    "stop": "停止生成",
+    "stopping": "正在停止...",
+    "escToStop": "停止",
+    "enterToSend": "发送",
+    "shiftEnterForNewline": "换行"
+  },
+  "message": {
+    "edit": "编辑",
+    "editOnly": "仅编辑",
+    "editAndRegenerate": "编辑并重新生成",
+    "editCancel": "取消",
+    "editSave": "保存",
+    "editSaveRegenerate": "保存并重新生成",
+    "delete": "删除",
+    "copy": "复制"
+  },
+  "authStatus": {
+    "checking": "检查认证状态...",
+    "authInfoTitle": "认证信息",
+    "loggedIn": "已登录",
+    "accountLabel": "账户",
+    "pointsBalance": "积分余额",
+    "pointsInfo": "积分说明",
+    "credentialsLabel": "凭证",
+    "accessTokenLabel": "access_token",
+    "copy": "复制",
+    "openInApp": "在 App 中打开",
+    "clickToCopy": "点击复制",
+    "noAccessToken": "暂无 access_token",
+    "settings": "设置",
+    "logout": "退出登录",
+    "unauthorized": "未授权的用户",
+    "authError": "认证错误或未配置"
+  },
+  "modelCapabilities": {
+    "vision": "视觉支持",
+    "audioInput": "音频输入",
+    "videoInput": "视频输入",
+    "webSearch": "网络搜索"
+  },
+  "modelSelector": {
+    "noProvider": "请先添加LLM提供商",
+    "notConfigured": "未设置"
+  },
+  "tierSelector": {
+    "title": "选择模型等级",
+    "free": "0.0x",
+    "rateFormat": "{{rate}}x",
+    "consumption": "消耗",
+    "multiplier": "倍率",
+    "infoModal": {
+      "title": "选择智能算力模式",
+      "subtitle": "根据任务难度，灵活调配 AI 算力消耗",
+      "speed": "响应速度",
+      "reasoning": "逻辑深度",
+      "availableModels": "模型能力参考",
+      "imageGen": "图像生成",
+      "disclaimer": "* 此列表仅作为模型能力参考，不代表实际调用的具体模型。"
+    },
+    "speedLabels": {
+      "ultraFast": "极快",
+      "fast": "快",
+      "moderate": "适中",
+      "thinking": "思考中..."
+    },
+    "reasoningLabels": {
+      "basic": "基础",
+      "standard": "标准",
+      "excellent": "优秀",
+      "max": "MAX"
+    },
+    "features": {
+      "quickTranslation": "快速翻译",
+      "textSummary": "文本摘要",
+      "simpleQA": "简单问答",
+      "dailyChat": "日常闲聊与助手",
+      "emailWriting": "邮件撰写",
+      "knowledgeQA": "知识问答",
+      "pdfAnalysis": "PDF 文档深度分析",
+      "codeWriting": "代码编写与调试",
+      "taskPlanning": "复杂任务规划与拆解",
+      "deepReasoning": "深度逻辑推理能力",
+      "academicAnalysis": "科研级学术分析",
+      "mathSolving": "复杂数学与算法求解"
+    },
+    "tiers": {
+      "ultra": {
+        "name": "Xyzen Ultra",
+        "description": "最强大的模型，适合复杂任务"
+      },
+      "pro": {
+        "name": "Xyzen Pro",
+        "description": "高级模型，适合专业用途"
+      },
+      "standard": {
+        "name": "Xyzen Standard",
+        "description": "性能与效率均衡"
+      },
+      "lite": {
+        "name": "Xyzen Lite",
+        "description": "快速轻量，适合简单任务"
+      }
+    }
+  }
+}

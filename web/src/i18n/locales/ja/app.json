@@ -1,0 +1,190 @@
+{
+  "title": "Xyzen",
+  "update": {
+    "updating": "v{{version}}に更新中..."
+  },
+  "pwa": {
+    "installTitle": "アプリをインストール",
+    "installDescription": "より良い体験のために、アドレスバーのインストールアイコンをクリックしてください。"
+  },
+  "chat": {
+    "assistantsTitle": "アシスタント",
+    "chooseAgentHint": "エージェントを選択して開始",
+    "chatLabel": "チャット",
+    "thinking": {
+      "label": "思考中...",
+      "showThinking": "思考過程を表示",
+      "hideThinking": "思考過程を非表示"
+    },
+    "toolCall": {
+      "arguments": "引数",
+      "result": "結果",
+      "error": "エラー",
+      "executedAt": "実行時刻",
+      "expandImage": "クリックで拡大",
+      "imageAlt": "生成画像",
+      "confirmExecute": "実行を確認"
+    },
+    "agent": {
+      "stopped": "生成が停止されました",
+      "subagents": "サブエージェント"
+    },
+    "status": {
+      "idle": "待機中",
+      "running": "実行中",
+      "stopping": "停止中",
+      "failed": "失敗"
+    }
+  },
+  "activityBar": {
+    "chat": "チャット",
+    "knowledge": "ナレッジベース",
+    "community": "コミュニティ",
+    "comingSoon": "近日公開予定"
+  },
+  "toolbar": {
+    "newChat": "新しい会話",
+    "newChatCreating": "作成中...",
+    "uploadFile": "ファイルをアップロード",
+    "resizeHint": "ドラッグして入力フレームの高さを調整",
+    "history": "履歴",
+    "search": "検索",
+    "searchBuiltin": "ビルトイン検索",
+    "searchSearxng": "ユニバーサル検索",
+    "knowledge": "ナレッジベース",
+    "knowledgeConnect": "ナレッジベースに接続",
+    "knowledgeDisconnect": "切断",
+    "mcpTools": "MCPツールが接続されました",
+    "searchOff": "オフ",
+    "searchOffDesc": "検索機能を使用しない",
+    "searchBuiltinDesc": "モデルのネイティブ検索機能を使用",
+    "searchBuiltinNotSupported": "現在のモデルはサポートしていません",
+    "searchBuiltinConflict": "MCPツールと競合するため使用できません",
+    "searchSearxngDesc": "ユニバーサル検索エンジンを使用",
+    "knowledgeSelect": "ナレッジベースを選択",
+    "knowledgeEmpty": "ナレッジベースがありません",
+    "knowledgeEmptyDesc": "まずナレッジパネルで作成してください",
+    "tools": "ツール",
+    "builtinTools": "ビルトインツール",
+    "webSearch": "ウェブ検索",
+    "webSearchDesc": "ウェブで情報を検索",
+    "knowledgeDesc": "ナレッジベースファイルにアクセス",
+    "noKnowledgeSet": "ナレッジベースが設定されていません",
+    "selectKnowledge": "ナレッジベースを選択",
+    "knowledgeSelected": "ナレッジベースが選択されています",
+    "noKnowledgeSets": "利用可能なナレッジベースがありません",
+    "noKnowledge": "なし",
+    "image": "画像",
+    "imageDesc": "画像を生成・読み取り",
+    "memory": "メモリ",
+    "memoryDesc": "会話履歴を検索"
+  },
+  "input": {
+    "placeholder": "メッセージを送信...",
+    "respondingPlaceholder": "AIが応答中...",
+    "send": "送信",
+    "stop": "生成を停止",
+    "stopping": "停止中...",
+    "escToStop": "停止",
+    "enterToSend": "送信",
+    "shiftEnterForNewline": "新しい行"
+  },
+  "message": {
+    "edit": "編集",
+    "editOnly": "編集のみ",
+    "editAndRegenerate": "編集して再生成",
+    "editCancel": "キャンセル",
+    "editSave": "保存",
+    "editSaveRegenerate": "保存して再生成",
+    "delete": "削除",
+    "copy": "コピー"
+  },
+  "authStatus": {
+    "checking": "認証状態を確認中...",
+    "authInfoTitle": "認証情報",
+    "loggedIn": "サインイン済み",
+    "accountLabel": "アカウント",
+    "pointsBalance": "ポイント残高",
+    "pointsInfo": "ポイント説明",
+    "credentialsLabel": "認証情報",
+    "accessTokenLabel": "access_token",
+    "copy": "コピー",
+    "openInApp": "アプリで開く",
+    "clickToCopy": "クリックしてコピー",
+    "noAccessToken": "access_token なし",
+    "settings": "設定",
+    "logout": "サインアウト",
+    "unauthorized": "未承認のユーザー",
+    "authError": "認証エラーまたは未設定"
+  },
+  "modelCapabilities": {
+    "vision": "ビジョンサポート",
+    "audioInput": "オーディオ入力",
+    "videoInput": "ビデオ入力",
+    "webSearch": "ウェブ検索"
+  },
+  "modelSelector": {
+    "noProvider": "まずLLMプロバイダーを追加してください",
+    "notConfigured": "未設定"
+  },
+  "tierSelector": {
+    "title": "モデルティアを選択",
+    "free": "0.0x",
+    "rateFormat": "{{rate}}x",
+    "consumption": "消費",
+    "multiplier": "倍率",
+    "infoModal": {
+      "title": "インテリジェンスモードを選択",
+      "subtitle": "タスクの難易度に応じてAI計算能力を柔軟に割り当て",
+      "speed": "応答速度",
+      "reasoning": "推論深度",
+      "availableModels": "能力の参考",
+      "imageGen": "画像生成",
+      "disclaimer": "* このリストはモデル能力の参考用であり、実際に使用されるモデルを保証するものではありません。"
+    },
+    "speedLabels": {
+      "ultraFast": "超高速",
+      "fast": "高速",
+      "moderate": "標準",
+      "thinking": "思考中..."
+    },
+    "reasoningLabels": {
+      "basic": "基本",
+      "standard": "標準",
+      "excellent": "優秀",
+      "max": "MAX"
+    },
+    "features": {
+      "quickTranslation": "クイック翻訳",
+      "textSummary": "テキスト要約",
+      "simpleQA": "シンプルなQ&A",
+      "dailyChat": "日常会話とアシスタント",
+      "emailWriting": "メール作成",
+      "knowledgeQA": "ナレッジQ&A",
+      "pdfAnalysis": "PDF詳細分析",
+      "codeWriting": "コード作成とデバッグ",
+      "taskPlanning": "複雑なタスク計画",
+      "deepReasoning": "深い論理的推論",
+      "academicAnalysis": "研究レベルの分析",
+      "mathSolving": "複雑な数学とアルゴリズム"
+    },
+    "tiers": {
+      "ultra": {
+        "name": "Xyzen ウルトラ",
+        "description": "複雑なタスク向けの最強モデル"
+      },
+      "pro": {
+        "name": "Xyzen プロ",
+        "description": "プロフェッショナル向けの高度なモデル"
+      },
+      "standard": {
+        "name": "Xyzen スタンダード",
+        "description": "性能と効率のバランス"
+      },
+      "lite": {
+        "name": "Xyzen ライト",
+        "description": "シンプルなタスク向けの高速軽量モデル"
+      }
+    }
+  }
+}
